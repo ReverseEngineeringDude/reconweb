@@ -41,7 +41,7 @@ Open two new terminals.
 
 Terminal 1 (Flask API):
 ```bash
-cd recon-scanner/backend
+cd backend
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -50,7 +50,7 @@ python app.py
 
 Terminal 2 (Celery Worker):
 ```bash
-cd recon-scanner/backend
+cd backend
 source venv/bin/activate
 celery -A tasks worker --loglevel=info
 ```
@@ -58,7 +58,7 @@ celery -A tasks worker --loglevel=info
 ### 3. Start Frontend
 Terminal 3 (React Dev Server):
 ```bash
-cd recon-scanner/frontend
+cd frontend
 npm install
 npm run dev
 ```
