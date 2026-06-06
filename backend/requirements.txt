@@ -4,3 +4,4 @@ Celery
 redis
 SQLAlchemy
 Flask-SQLAlchemy
+requests

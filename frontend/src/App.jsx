@@ -1,28 +1,43 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import ScanForm from './components/ScanForm';
 import Dashboard from './components/Dashboard';
+import History from './components/History';
+import Navbar from './components/Navbar';
+
+function AppRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<ScanForm />} />
+        <Route path="/scan/:id" element={<Dashboard />} />
+        <Route path="/history" element={<History />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
 
 function App() {
+  const [theme, setTheme] = useState('dark');
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
+
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-slate-950 text-slate-300 font-sans selection:bg-emerald-500/30">
-        <nav className="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-                <span className="font-mono font-bold text-black text-lg">R</span>
-              </div>
-              <h1 className="text-xl font-bold tracking-widest text-white">RECON<span className="text-emerald-400 font-light">WEB</span></h1>
-            </div>
-            <a href="/" className="text-sm font-medium text-slate-400 hover:text-emerald-400 transition-colors">New Scan</a>
-          </div>
-        </nav>
-        <main className="p-6 md:p-8">
-          <Routes>
-            <Route path="/" element={<ScanForm />} />
-            <Route path="/scan/:id" element={<Dashboard />} />
-          </Routes>
+      <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-zinc-950 dark:text-zinc-100 font-sans selection:bg-accent-500/30 transition-colors duration-500">
+        <Navbar theme={theme} toggleTheme={toggleTheme} />
+        <main className="p-4 md:p-8 pt-24 relative z-10 min-h-screen flex flex-col items-center">
+          <AppRoutes />
         </main>
       </div>
     </BrowserRouter>

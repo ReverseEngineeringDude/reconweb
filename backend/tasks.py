@@ -2,6 +2,7 @@ import os
 import subprocess
 import json
 import tempfile
+import requests
 from datetime import datetime
 from celery import Celery
 from config import Config
@@ -36,11 +37,14 @@ def run_scan_pipeline(scan_id, domain):
             try:
                 result = subprocess.run(['subfinder', '-d', domain, '-silent', '-json'], capture_output=True, text=True, timeout=300)
                 subdomains = parse_subfinder(result.stdout)
+                
+                # We will process subdomains synchronously for the DB, but frontend wants 'real-time' feeling animations
+                # which we will handle purely on the frontend side by animating the table list.
                 for sub in subdomains:
                     db.session.add(Subdomain(scan_id=scan_id, host=sub, status='found'))
                 db.session.commit()
             except Exception as e:
-                db.session.add(Subdomain(scan_id=scan_id, host='Error/Skipped: subfinder not installed or failed', status='error'))
+                db.session.add(Subdomain(scan_id=scan_id, host=f'Error/Skipped: subfinder failed or not installed', status='error'))
                 db.session.commit()
                 
             scan.progress = 30
